@@ -75,7 +75,7 @@ module.exports = async function slackSend(core) {
         await Promise.all(channelIds.split(',').map(async (channelId) => {
           if (ts) {
           // update message
-            webResponse = await web.chat.update({ ts, channel: channelId.trim(), text: message, ...(payload || {}) });
+            webResponse = await web.chat.postMessage({ thread_ts:ts, channel: channelId.trim(), text: message, ...(payload || {}) });
           } else {
           // post message
             webResponse = await web.chat.postMessage({ channel: channelId.trim(), text: message, ...(payload || {}) });
@@ -139,11 +139,11 @@ module.exports = async function slackSend(core) {
         return;
       }
     }
-
+    console.log(webResponse)
     if (webResponse && webResponse.ok) {
       core.setOutput('ts', webResponse.ts);
       // return the thread_ts if it exists, if not return the ts
-      const thread_ts = webResponse.thread_ts ? webResponse.thread_ts : webResponse.ts;
+      const thread_ts = webResponse.message.ts
       core.setOutput('thread_ts', thread_ts);
     }
 
